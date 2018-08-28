@@ -10,3 +10,15 @@
 
 # License
 - MIT license
+
+# Preview
+
+- UI:
+
+![Den_Trai_Tim demo](shot.png)
+
+[![Den_Trai_Tim demo](http://img.youtube.com/vi/YdsgntQp6_w/0.jpg)](http://www.youtube.com/watch?v=YdsgntQp6_w)
+
+- Demo
+
+[![Den_Trai_Tim demo](http://img.youtube.com/vi/tfret4mzWNQ/0.jpg)](http://www.youtube.com/watch?v=tfret4mzWNQ)
