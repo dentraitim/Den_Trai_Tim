@@ -1,5 +1,0 @@
-Flash Mode:
-GPIO0 - GND
-GPIO2 - VCC
-(CH_PD) EN - VCC
-GPIO15 - GND (1kOhm) always

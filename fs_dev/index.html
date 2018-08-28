@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link rel="stylesheet" href="style.css" />
+  <title>Đèn Trái Tim - By Big Boss</title>
+  <meta charset="utf-8" />
+  <link rel="shortcut icon" href="heart-icon.png" type="image/png" />
+  <link rel="icon" sizes="256x256" href="heart-icon.png">
+  <link rel="apple-touch-icon" sizes="256x256" href="heart-icon.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#4527A0" />
+</head>
+
+<body>
+  <div id="heart"></div>
+  <div id="main" style="display: none">
+    <nav class="nav" tabindex="-1" onclick="this.focus()">
+      <div class="container">
+        <a class="pagename current" href="/">Đèn trái tim</a>
+      </div>
+    </nav>
+    <div class="container">
+      <div class="hero">
+        <h1>Cài đặt Đèn Trái Tim</h1>
+      </div>
+      <div class="row form">
+        <div class="col c4">
+          <div class="row">
+            <div class="col c12">
+              <form method="post" id="ap-form">
+                <h2>Phát wifi</h2>
+                <div class="form-control">
+                  <label for="ap-ssid">Tên wifi:</label>
+                  <input type="text" class="smooth" id="ap-ssid" required placeholder="Type AP SSID..">
+                </div>
+                <div class="form-control">
+                  <label for="ap-pass">Mật khẩu:</label>
+                  <input type="text" class="smooth" id="ap-pass" placeholder="Type AP password..">
+                </div>
+                <div class="form-control">
+                  <button type="submit" class="btn btn-sm btn-c">Lưu lại</button>
+                </div>
+              </form>
+            </div>
+            <div class="col c12">
+              <h2>Bắt wifi</h2>
+              <form method="post" id="form">
+                <div class="form-control">
+                  <label for="ssid">Tên wifi:</label>
+                  <input type="text" class="smooth" id="ssid" required placeholder="Type WiFi network...">
+                </div>
+                <div class="form-control">
+                  <label for="pass">Mật khẩu:</label>
+                  <input type="text" class="smooth" id="pass" placeholder="Type WiFi password...">
+                </div>
+                <div class="form-control">
+                  <button type="submit" class="btn btn-sm btn-c">Lưu lại</button>
+                </div>
+                <h4>Wifi dự phòng 1</h4>
+                <div class="form-control">
+                  <label for="ssid">Tên wifi:</label>
+                  <input type="text" class="smooth" id="ssid1" placeholder="Type WiFi network...">
+                </div>
+                <div class="form-control">
+                  <label for="pass">Mật khẩu:</label>
+                  <input type="text" class="smooth" id="pass1" placeholder="Type WiFi password...">
+                </div>
+                <h4>Wifi dự phòng 2</h4>
+                <div class="form-control">
+                  <label for="ssid">Tên wifi:</label>
+                  <input type="text" class="smooth" id="ssid2" placeholder="Type WiFi network...">
+                </div>
+                <div class="form-control">
+                  <label for="pass">Mật khẩu:</label>
+                  <input type="text" class="smooth" id="pass2" placeholder="Type WiFi password...">
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <div class="col c8">
+          <button type="button" onclick="scanWifi()" class="btn btn-sm btn-c" id="scan-wifi">Dò wifi</button>
+          <button type="button" onclick="clearLogs()" class="btn btn-sm btn-c">Clear</button>
+          <div id="scanning-wifi" style="display: none">
+            <div style="width: 250px;margin: 0 auto;">
+              <div style="display: grid; text-align: center; height: 100px;">
+                <input id="toggle-heart" class="twheart" type="checkbox" />
+                <label for="toggle-heart" class="twheart" aria-label="like">❤</label>
+              </div>
+            </div>
+          </div>
+          <div id="result"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-notification" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span class="close">&times</span>
+        <div class="header-txt">Cài đặt thành công</div>
+      </div>
+      <div class="modal-body">
+        <div style="margin: 0 auto;width: 100%;">
+          <img class="gif" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzNiAzNiI+PHBhdGggZmlsbD0iI0ZGQ0M0RCIgZD0iTTM2IDE4YzAgOS45NDEtOC4wNTkgMTgtMTggMThTMCAyNy45NDEgMCAxOCA4LjA1OSAwIDE4IDBzMTggOC4wNTkgMTggMTgiLz48cGF0aCBmaWxsPSIjNjY0NTAwIiBkPSJNMjIgMjdjMCAyLjc2My0xLjc5MSAzLTQgMy0yLjIxIDAtNC0uMjM3LTQtMyAwLTIuNzYxIDEuNzktNiA0LTYgMi4yMDkgMCA0IDMuMjM5IDQgNnptOC0xMmMtLjEyNCAwLS4yNS0uMDIzLS4zNzEtLjA3Mi01LjIyOS0yLjA5MS03LjM3Mi01LjI0MS03LjQ2MS01LjM3NC0uMzA3LS40Ni0uMTgzLTEuMDgxLjI3Ny0xLjM4Ny40NTktLjMwNiAxLjA3Ny0uMTg0IDEuMzg1LjI3NC4wMTkuMDI3IDEuOTMgMi43ODUgNi41NDEgNC42MjkuNTEzLjIwNi43NjMuNzg3LjU1OCAxLjMtLjE1Ny4zOTItLjUzMy42My0uOTI5LjYzek02IDE1Yy0uMzk3IDAtLjc3Mi0uMjM4LS45MjktLjYyOS0uMjA1LS41MTMuMDQ0LTEuMDk1LjU1Ny0xLjMgNC42MTItMS44NDQgNi41MjMtNC42MDIgNi41NDItNC42MjkuMzA4LS40NTYuOTI5LS41NzcgMS4zODctLjI3LjQ1Ny4zMDguNTgxLjkyNS4yNzUgMS4zODMtLjA4OS4xMzMtMi4yMzIgMy4yODMtNy40NiA1LjM3NEM2LjI1IDE0Ljk3NyA2LjEyNCAxNSA2IDE1eiIvPjxwYXRoIGZpbGw9IiM1REFERUMiIGQ9Ik0yNCAxNmg0djE5bC00LS4wNDZWMTZ6TTggMzVsNC0uMDQ2VjE2SDh2MTl6Ii8+PHBhdGggZmlsbD0iIzY2NDUwMCIgZD0iTTE0Ljk5OSAxOGMtLjE1IDAtLjMwMy0uMDM0LS40NDYtLjEwNS0zLjUxMi0xLjc1Ni03LjA3LS4wMTgtNy4xMDUgMC0uNDk1LjI0OS0xLjA5NS4wNDYtMS4zNDItLjQ0Ny0uMjQ3LS40OTQtLjA0Ny0xLjA5NS40NDctMS4zNDIuMTgyLS4wOSA0LjQ5OC0yLjE5NyA4Ljg5NSAwIC40OTQuMjQ3LjY5NC44NDguNDQ3IDEuMzQyLS4xNzYuMzUtLjUyOS41NTItLjg5Ni41NTJ6bTE0IDBjLS4xNSAwLS4zMDMtLjAzNC0uNDQ2LS4xMDUtMy41MTMtMS43NTYtNy4wNy0uMDE4LTcuMTA1IDAtLjQ5NC4yNDgtMS4wOTQuMDQ3LTEuMzQyLS40NDctLjI0Ny0uNDk0LS4wNDctMS4wOTUuNDQ3LTEuMzQyLjE4Mi0uMDkgNC41MDEtMi4xOTYgOC44OTUgMCAuNDk0LjI0Ny42OTQuODQ4LjQ0NyAxLjM0Mi0uMTc2LjM1LS41MjkuNTUyLS44OTYuNTUyeiIvPjxlbGxpcHNlIGZpbGw9IiM1REFERUMiIGN4PSIxOCIgY3k9IjM0IiByeD0iMTgiIHJ5PSIyIi8+PGVsbGlwc2UgZmlsbD0iI0U3NUE3MCIgY3g9IjE4IiBjeT0iMjciIHJ4PSIzIiByeT0iMiIvPjwvc3ZnPg=="
+            width="150px" />
+          <div id="success" style="width: 100px;display: grid;text-align: center;height: 100px;margin: 0 auto;">
+            <input id="toggle-heart-2" class="twheart" type="checkbox" />
+            <label for="toggle-heart-2" class="twheart" aria-label="like">❤</label>
+          </div>
+        </div>
+        <div>
+          <p class="modal-txt">
+          </p>
+        </div>
+      </div>
+      <div class="modal-footer">
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <script>
+    // sw
+    window.addEventListener('load', function () {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('ws.js').then(function (reg) {
+          console.log('ws scope:', reg.scope)
+          reg.onupdatefound = function () {
+            var installingWorker = reg.installing;
+            installingWorker.onstatechange = function () {
+              switch (installingWorker.state) {
+                case 'installed':
+                  if (navigator.serviceWorker.controller) {
+                    console.log('New or updated content is available.');
+                  } else {
+                    console.log('Content is now available offline!');
+                  }
+                  break;
+                case 'redundant':
+                  console.error('The installing service worker became redundant.');
+                  break;
+              }
+            };
+          };
+        }).catch(function (e) {
+          console.error('Error during service worker registration:', e);
+        });
+      }
+    })
+
+    // heart
+    var heart = document.getElementById('toggle-heart');
+    var heart2 = document.getElementById('toggle-heart-2');
+    setInterval(function () { heart.checked = !heart.checked; heart2.checked = !heart2.checked }, 1000);
+
+    // modal
+    var modal = document.getElementById('modal-notification');
+    var span = document.getElementsByClassName("close")[0];
+    span.onclick = function () {
+      modal.style.display = "none";
+    }
+    document.addEventListener('click', function (event) {
+      if (event && event.target == modal) {
+        modal.style.display = "none";
+      }
+    });
+
+    var loadingHeart = document.getElementById('heart');
+    loadingHeart.style.marginTop = ((window.innerHeight || document.documentElement.clientHeight || document.getElementsByTagName('body')[0].clientHeight) / 2 - 60) + 'px'
+    setTimeout(function () {
+      var main = document.getElementById('main');
+      loadingHeart.style.display = 'none';
+      main.style.display = '';
+      var body = document.getElementsByTagName('body')[0];
+      body.style.background = '0';
+      body.style.padding = '0';
+    }, 3000);
+    var apssid = document.querySelector('#ap-ssid');
+    var appass = document.querySelector('#ap-pass');
+    var apform = document.querySelector('#ap-form');
+    var ssid = document.querySelector('#ssid');
+    var pass = document.querySelector('#pass');
+    var ssid1 = document.querySelector('#ssid1');
+    var pass1 = document.querySelector('#pass1');
+    var ssid2 = document.querySelector('#ssid2');
+    var pass2 = document.querySelector('#pass2');
+    var form = document.querySelector('#form');
+    var result = document.querySelector('#result');
+    var msgid = 0;
+    function clearLogs() {
+      result.innerHTML = '';
+      msgid = 0;
+    }
+    var log = function (msg) {
+      if (!msg) return;
+      msgid++;
+      var span = document.createElement('span');
+      span.innerHTML = msgid + ': ' + ('' + msg).replace(/[<>&]/g, function ($0) { return ({ '>': '&gt;', '<': '&lt;', '&': '&amp;' })[$0]; }) + '\n';
+      if (result.firstChild) {
+        result.insertBefore(span, result.firstChild);
+        return;
+      }
+      result.appendChild(span);
+    };
+
+    log('Calling /rpc/Config.Get ..');
+    (function () {
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', '/rpc/Config.Get');
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if (xhr.responseText) {
+            try {
+              var json = JSON.parse(xhr.responseText);
+              log('Result: ' + xhr.responseText);
+              ssid.value = json.wifi.sta.ssid;
+              pass.value = json.wifi.sta.pass;
+              // backup
+              ssid1.value = json.wifi.sta1.ssid;
+              pass1.value = json.wifi.sta1.pass;
+              ssid2.value = json.wifi.sta2.ssid;
+              pass2.value = json.wifi.sta2.pass;
+              //
+              apssid.value = json.wifi.ap.ssid;
+              appass.value = json.wifi.ap.pass;
+            } catch (e) {
+              log(e);
+            }
+          } else {
+            log('Request failed. Returned status of ' + xhr.status);
+          }
+        }
+      };
+      xhr.send();
+    })();
+    function scanWifi() {
+      var scanningWifi = document.getElementById('scanning-wifi');
+      scanningWifi.style.display = '';
+      var button = document.getElementById('scan-wifi');
+      if (button.disabled) return;
+      button.disabled = true;
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', '/rpc/Wifi.Scan');
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          scanningWifi.style.display = 'none';
+          button.disabled = false;
+          if (xhr.responseText) {
+            try {
+              log('--------------- Danh sách wifi ---------------');
+              var json = JSON.parse(xhr.responseText);
+              for (var i = 0, l = json.length; i < l; i++) {
+                log(json[i].ssid);
+              }
+            } catch (e) {
+              log(e);
+            }
+          } else {
+            log('Request failed. Returned status of ' + xhr.status);
+          }
+        }
+      };
+      xhr.send();
+    }
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (!ssid.value) return;
+      var config = {
+        wifi: {
+          sta: {
+            enable: true,
+            ssid: ssid.value,
+            pass: pass.value
+          }
+        }
+      };
+      var haveBackup = false
+      if (ssid1.value) {
+        config.wifi.sta1 = {
+          enable: true,
+          ssid: ssid1.value,
+          pass: pass1.value
+        };
+        haveBackup = true;
+      }
+      if (ssid2.value) {
+        config.wifi.sta2 = {
+          enable: true,
+          ssid: ssid2.value,
+          pass: pass2.value
+        };
+        haveBackup = true;
+      }
+      log('Calling /rpc/Config.Set STA: ' + ssid.value + ' / ' + pass.value + (haveBackup ? ' / and backups' : ' / no-backups'));
+      (function () {
+        var button = form.querySelector('[type="submit"]');
+        if (button.disabled) return;
+        button.disabled = true;
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/rpc/Config.Set');
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState === 4) {
+            button.disabled = false;
+            if (xhr.status === 200) {
+              successNoti();
+              log('Success. Saving and rebooting..');
+              (function () {
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', '/rpc/Config.Save');
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.onreadystatechange = function () {
+                  if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                      log('Success. Rebooting..');
+                    } else {
+                      log('Request failed. Returned status of ' + xhr.status);
+                    }
+                  }
+                };
+                xhr.send(JSON.stringify({ reboot: true }));
+              })();
+            } else {
+              failedNoti();
+              log('Request failed. Returned status of ' + xhr.status);
+            }
+          }
+        };
+        xhr.send(JSON.stringify({ config: config }));
+      })();
+    });
+    function successNoti() {
+      var modal = document.querySelector('#modal-notification');
+      var modalHeader = modal.querySelector('.modal-header');
+      var modalHeaderTxt = modal.querySelector('.header-txt');
+      var modalGif = modal.querySelector('.gif');
+      var modalTxt = modal.querySelector('.modal-txt');
+      var successAnimation = modal.querySelector('#success');
+      modalHeaderTxt.innerHTML = 'Cài đặt thành công';
+      modalHeader.style.backgroundColor = '#5cb85c';
+      modalTxt.innerHTML = 'Muội hãy để ý đèn trái tim nhé. Nó sẽ được khởi động lại.<br />Nếu muội thấy nó nhấp nháy thì nó đã khởi động thành công rồi đấy.';
+      successAnimation.style.display = 'grid';
+      modalGif.style.display = 'none';
+      modal.style.display = 'block';
+    }
+    function failedNoti() {
+      var modal = document.querySelector('#modal-notification');
+      var modalHeader = modal.querySelector('.modal-header');
+      var modalHeaderTxt = modal.querySelector('.header-txt');
+      var modalGif = modal.querySelector('.gif');
+      var modalTxt = modal.querySelector('.modal-txt');
+      var successAnimation = modal.querySelector('#success');
+      modalHeaderTxt.innerHTML = 'Chưa cài được';
+      modalHeader.style.backgroundColor = 'rgb(199, 89, 89)';
+      modalTxt.innerHTML = 'Ồ, hình như muội chưa kết nối tới wifi của đèn trái tim thì phải.<br />Hãy kết nối đến wifi có tên Den_Trai_Tim rồi Tải lại trang này nhé ;)';
+      modalGif.style.display = '';
+      successAnimation.style.display = 'none';
+      modal.style.display = 'block';
+    }
+    apform.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (!apssid.value) return;
+      log('Calling /rpc/Config.Set AP: ' + apssid.value + ' / ' + appass.value);
+      (function () {
+        var button = apform.querySelector('[type="submit"]');
+        if (button.disabled) return;
+        button.disabled = true;
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/rpc/Config.Set');
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState === 4) {
+            button.disabled = false;
+            if (xhr.status === 200) {
+              successNoti();
+              log('Success. Saving and rebooting..');
+              (function () {
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', '/rpc/Config.Save');
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.onreadystatechange = function () {
+                  if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                      log('Success. Rebooting..');
+                    } else {
+                      log('Request failed. Returned status of ' + xhr.status);
+                    }
+                  }
+                };
+                xhr.send(JSON.stringify({ reboot: true }));
+              })();
+            } else {
+              failedNoti();
+              log('Request failed. Returned status of ' + xhr.status);
+            }
+          }
+        };
+        xhr.send(JSON.stringify({ config: { wifi: { ap: { enable: true, ssid: apssid.value, pass: appass.value } } } }));
+      })();
+    });
+  </script>
+  <script src="love.min.js"></script>
+</body>
+
+</html>

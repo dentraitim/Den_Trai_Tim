@@ -1,12 +1,12 @@
-# Den_Trai_Tim
-Đèn Trái Tim (HeartLight)
+# Den Trai Tim 2
+Đèn Trái Tim powered by Mongoose OS
 
-# Base on an idea of 
-[![Origin Idea](http://img.youtube.com/vi/v1Bu7PBw1cQ/0.jpg)](https://www.youtube.com/watch?v=v1Bu7PBw1cQ)
+# How to build
+`mos build --platform esp8266`
 
-# Demo
-[![Youtube Demo](http://img.youtube.com/vi/tfret4mzWNQ/0.jpg)](http://www.youtube.com/watch?v=tfret4mzWNQ)
+# How to flash
+`mos flash --platform esp8266 --esp-flash-params "dio,32m,80m" --port COM8 --esp-baud-rate 0 --esp-erase-chip --esp-rom-baud-rate 115200`
+-  replace COM8 by your port,..
 
-# It's my sad story.
-
-# Boss: When the river meet the sea :(((
+# License
+- MIT license

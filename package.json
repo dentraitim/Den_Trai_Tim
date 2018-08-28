@@ -1,0 +1,12 @@
+{
+  "name": "den-trai-tim",
+  "version": "1.0.0",
+  "repository": "https://github.com/vinhjaxt/Den_Trai_Tim",
+  "author": "<ngoc.lo.dang@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "cssnano": "^4.1.0",
+    "html-minifier": "^3.5.20",
+    "uglify-es": "^3.3.9"
+  }
+}
